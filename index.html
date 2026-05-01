@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <title>Loading... | humming[bird]tech</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+   
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <style>
+        .iframe-16x9 { margin-top:10px; width: 100%; position: relative; padding-top: 56.25%; background: #000; }
+        .iframe-16x9 iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+        .ui-bar-x { background-color: #111; color: #fff; text-shadow: none; border: none; }
+        .nav-btn-container { text-align: center; margin: 20px 0; }
+        .brand-logo { color: #E65A04 !important; text-decoration: none; font-weight: bold; }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <script>
+        $(document).bind("mobileinit", function () {
+            $.mobile.ajaxEnabled = false;
+        });
+    </script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+    <div data-role="page">
+        <div data-role="header" data-theme="b">
+            <h1><a href="/" class="brand-logo">humming[bird]tech</a></h1>
+            <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
+        </div>
+
+        <div data-role="content">
+            <div class="ui-bar ui-bar-x">
+                <h1 id="ep-display-title">One Piece Episode ...</h1>
+            </div>
+
+            <div class="ui-grid-solo">
+                <div class="ui-block-a" id="video-wrapper">
+                    <div class="iframe-16x9">
+                        <div id="player-target"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-btn-container">
+                <button onclick="navEp(-1)" data-inline="true" data-icon="arrow-l">Previous</button>
+                <button onclick="navEp(1)" data-inline="true" data-icon="arrow-r" data-iconpos="right">Next</button>
+            </div>
+
+            <div data-role="collapsible" data-collapsed="false">
+                <h3>Episode Info</h3>
+                <p>Watching <b>One Piece</b> ad-free on <b>humming[bird]tech</b>. Use the buttons above to browse all episodes.</p>
+            </div>
+        </div>
+
+        <div data-role="panel" id="nav-panel" data-display="overlay" data-theme="b">
+            <ul data-role="listview">
+                <li data-icon="delete"><a href="#" data-rel="close">Close Menu</a></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/dubbed-anime-list">Dubbed Anime</a></li>
+                <li><a href="/subbed-anime-list">Subbed Anime</a></li>
+                <li><a href="/movie-list">Movies</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Use URL parameters to decide which episode to show
+        const params = new URLSearchParams(window.location.search);
+        let epNum = parseInt(params.get('ep')) || 164; // Default to 164 if no ?ep= is found
+
+        function loadEpisode(number) {
+            // Update the Browser Title and Header [cite: 165]
+            const fullTitle = "One Piece Episode " + number + " English Dubbed | humming[bird]tech";
+            document.title = fullTitle;
+            document.getElementById('ep-display-title').innerText = "One Piece Episode " + number;
+
+            // Generate the clean embed URL (No Ads)
+            // This pulls the source directly from the host provider [cite: 243, 254]
+            const embedUrl = "https://www.wcostream.tv/embed/one-piece-episode-" + number + "-english-dubbed-3";
+           
+            document.getElementById('player-target').innerHTML =
+                `<iframe src="${embedUrl}" allowfullscreen="true" scrolling="no"></iframe>`;
+        }
+
+        function navEp(step) {
+            epNum += step;
+            if(epNum < 1) epNum = 1;
+           
+            // Update the URL without reloading the page
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?ep=' + epNum;
+            window.history.pushState({path:newUrl}, '', newUrl);
+           
+            loadEpisode(epNum);
+        }
+
+        // Run on page load
+        loadEpisode(epNum);
+    </script>
+</body>
+</html>
